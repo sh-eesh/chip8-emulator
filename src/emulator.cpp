@@ -2,6 +2,7 @@
 
 #include <fstream>
 
+// Fonts to be used by programs
 const uint8_t fontset[80] = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -46,6 +47,7 @@ void Emulator::initialize()
         stack[i] = 0;
     }
 
+    // Reset timers
     delayTimer = 0;
     soundTimer = 0;
 
@@ -58,5 +60,40 @@ void Emulator::initialize()
 
 bool Emulator::loadROM(const char *fileName)
 {
+    // Open ROM in binary mode and postion file ptr at the end
     std::ifstream file(fileName, std::ios::binary | std::ios::ate);
+
+    // Check file opened or not
+    if (!file.is_open())
+    {
+        return false;
+    }
+
+    // Get the size of the ROM in bytes
+    std::streamsize size = file.tellg();
+
+    // Check if ROM fits in memory
+    if (size <= 0 || size > 4096 - 0x200)
+    {
+        file.close();
+        return false;
+    }
+
+    // Move file ptr at the beginning
+    file.seekg(0, std::ios::beg);
+
+    // Read ROM and copy it to memory from location 0x200
+    file.read(reinterpret_cast<char *>(&memory[0x200]), size);
+
+    // Check if read was successful
+    if (!file)
+    {
+        file.close();
+        return false;
+    }
+
+    // Close the file
+    file.close();
+
+    return true;
 }

@@ -28,6 +28,18 @@ private:
     uint8_t soundTimer = 0;
 
 public:
+    // Initialize the emulator
     void initialize();
+
+    // Load roms
     bool loadROM(const char *fileName);
+
+    // Fetch instructions
+    uint16_t fetch();
+
+    // Decode instrctions
+    uint16_t decode(uint16_t instruction);
+
+    // Execute instructions
+    void execute(uint16_t instruction);
 };

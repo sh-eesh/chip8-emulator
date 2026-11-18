@@ -97,3 +97,60 @@ bool Emulator::loadROM(const char *fileName)
 
     return true;
 }
+
+uint16_t Emulator::fetch()
+{
+    // Read the first byte of instruction
+    uint16_t instruction = memory[PC];
+
+    // Shift it 8 bits left and combine it with second byte
+    instruction = (instruction << 8) | memory[PC + 1];
+
+    // Move to the next instruction
+    PC += 2;
+
+    return instruction;
+}
+
+uint16_t Emulator::decode(uint16_t instruction)
+{
+    // Extract the four hex digits
+    uint16_t first = (instruction & 0xF000) >> 12;
+    uint16_t second = (instruction & 0x0F00) >> 8;
+    uint16_t third = (instruction & 0x00F0) >> 4;
+    uint16_t fourth = instruction & 0x000F;
+
+    return 0;
+}
+
+void Emulator::execute(uint16_t instruction)
+{
+    // Extract instruction type
+    uint16_t first = (instruction & 0xF000) >> 12;
+
+    // Extract register number
+    uint16_t x = (instruction & 0x0F00) >> 8;
+
+    // Extract the 8 bit value
+    uint16_t nn = instruction & 0x00FF;
+
+    // 6XNN Set VX to NN
+    if (first == 0x6)
+    {
+        V[x] = nn;
+    }
+    // 7XNN Add NN to VX
+    else if (first == 0x7)
+    {
+        V[x] += nn;
+    }
+    // 1NNN Jump to address NNN
+    else if (first = 0x1)
+    {
+        // Extract 12 bit address
+        uint16_t address = instruction & 0x0FFF;
+
+        // Change program counter
+        PC = address;
+    }
+}
